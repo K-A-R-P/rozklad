@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Розклад дзвінків</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  font-family:'Nunito',sans-serif;
+  min-height:100vh;
+  background:linear-gradient(160deg,#0a0a23,#1a1a40 40%,#0f1f3a);
+  display:flex;flex-direction:column;align-items:center;
+  padding:30px 15px 60px;
+  overflow-x:hidden;position:relative;
+}
+
+/* ── Particles ── */
+.particles{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.particle{
+  position:absolute;border-radius:50%;
+  background:rgba(255,255,255,0.06);
+  animation:float linear infinite;
+}
+@keyframes float{
+  0%{transform:translateY(100vh) scale(0);opacity:0}
+  10%{opacity:1}90%{opacity:1}
+  100%{transform:translateY(-10vh) scale(1);opacity:0}
+}
+
+/* ── Clock ── */
+.clock-wrap{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;align-items:center;
+  margin-bottom:20px;animation:fadeDown .8s ease-out both;
+}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-40px)}to{opacity:1;transform:translateY(0)}}
+
+.clock-svg{width:210px;height:210px;filter:drop-shadow(0 0 25px rgba(100,200,255,.25))}
+.clock-bg{fill:rgba(255,255,255,.04);stroke:rgba(255,255,255,.12);stroke-width:2}
+.tick{stroke:rgba(255,255,255,.45);stroke-width:1.5;stroke-linecap:round}
+.tick-maj{stroke:#fff;stroke-width:2.5}
+.hand{transform-origin:105px 105px}
+.hand-h{stroke:#e2e8f0;stroke-width:4.5;stroke-linecap:round}
+.hand-m{stroke:#67e8f9;stroke-width:3;stroke-linecap:round}
+.hand-s{stroke:#fb7185;stroke-width:1.5;stroke-linecap:round}
+.dot{fill:#fb7185}
+.digital{font-size:2rem;font-weight:900;color:#f1f5f9;letter-spacing:2px;margin-top:4px;
+  text-shadow:0 0 18px rgba(103,232,249,.45)}
+.weekday{font-size:.85rem;color:rgba(255,255,255,.4);margin-top:2px}
+
+/* ── Title ── */
+.title{position:relative;z-index:1;text-align:center;margin-bottom:18px;animation:fadeDown .8s .15s ease-out both}
+.title-main{
+  font-size:2rem;font-weight:900;
+  background:linear-gradient(90deg,#67e8f9,#a78bfa,#fb7185);
+  background-size:250% auto;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:shimmer 4s linear infinite;
+}
+@keyframes shimmer{0%{background-position:0% center}100%{background-position:250% center}}
+.title-sub{font-size:1rem;font-weight:600;color:rgba(255,255,255,.4);margin-top:2px}
+
+/* ── Live Status ── */
+.status{
+  position:relative;z-index:1;
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.06);backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.1);border-radius:16px;
+  padding:12px 28px;margin-bottom:30px;
+  font-size:.95rem;font-weight:700;color:#fff;
+  animation:fadeDown .8s .3s ease-out both;
+}
+.indicator{
+  width:14px;height:14px;border-radius:50%;flex-shrink:0;
+  transition:background .4s,box-shadow .4s;
+}
+.indicator.lesson{background:#4ade80;box-shadow:0 0 10px rgba(74,222,128,.5)}
+.indicator.break{background:#facc15;box-shadow:0 0 10px rgba(250,204,21,.5)}
+.indicator.before{background:#60a5fa;box-shadow:0 0 10px rgba(96,165,250,.5)}
+.indicator.after{background:#94a3b8;box-shadow:0 0 10px rgba(148,163,184,.5)}
+.indicator.pulse{animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+
+/* ── Schedule ── */
+.schedule{
+  position:relative;z-index:1;
+  width:100%;max-width:650px;
+  animation:fadeDown .8s .45s ease-out both;
+}
+
+/* Each block = lesson + break */
+.block{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:18px;
+  overflow:hidden;
+  transition:transform .3s,box-shadow .3s,border-color .4s;
+}
+.block:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(100,200,255,.1);border-color:rgba(100,200,255,.2)}
+.block.active{
+  border-color:rgba(103,232,249,.35);
+  box-shadow:0 0 30px rgba(103,232,249,.15);
+  animation:glow 2s ease-in-out infinite;
+}
+@keyframes glow{0%,100%{box-shadow:0 0 25px rgba(103,232,249,.12)}50%{box-shadow:0 0 40px rgba(103,232,249,.22)}}
+.block.done{opacity:.35;filter:grayscale(.3)}
+.block.break-active{
+  border-color:rgba(250,204,21,.3);
+  box-shadow:0 0 25px rgba(250,204,21,.12);
+  animation:glow 2s ease-in-out infinite;
+}
+@keyframes glowBreak{0%,100%{box-shadow:0 0 20px rgba(250,204,21,.1)}50%{box-shadow:0 0 35px rgba(250,204,21,.2)}}
+
+/* Lesson row */
+.lesson-row{
+  display:grid;
+  grid-template-columns:50px 1fr auto;
+  align-items:center;gap:14px;
+  padding:16px 20px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.lesson-num{
+  display:flex;align-items:center;justify-content:center;
+  width:44px;height:44px;border-radius:12px;
+  font-size:1.2rem;font-weight:900;color:#fff;flex-shrink:0;
+  transition:transform .3s,box-shadow .3s;
+}
+.block:hover .lesson-num{transform:scale(1.08) rotate(-3deg)}
+.block.active .lesson-num{transform:scale(1.12);box-shadow:0 0 14px rgba(255,255,255,.3)}
+
+.lesson-num.n0{background:linear-gradient(135deg,#6366f1,#818cf8)}
+.lesson-num.n1{background:linear-gradient(135deg,#8b5cf6,#a78bfa)}
+.lesson-num.n2{background:linear-gradient(135deg,#06b6d4,#67e8f9)}
+.lesson-num.n3{background:linear-gradient(135deg,#f59e0b,#fbbf24)}
+.lesson-num.n4{background:linear-gradient(135deg,#ef4444,#f87171)}
+.lesson-num.n5{background:linear-gradient(135deg,#10b981,#6ee7b7)}
+.lesson-num.n6{background:linear-gradient(135deg,#f43f5e,#fb7185)}
+.lesson-num.n7{background:linear-gradient(135deg,#ec4899,#f9a8d4)}
+
+.lesson-info{display:flex;flex-direction:column;gap:3px}
+.lesson-label{font-size:.9rem;font-weight:700;color:#e2e8f0}
+.lesson-time{font-size:1.25rem;font-weight:800;color:#fff;letter-spacing:.5px}
+
+.lesson-duration{
+  font-size:.75rem;font-weight:600;color:rgba(255,255,255,.3);
+  background:rgba(255,255,255,.06);
+  padding:4px 10px;border-radius:8px;
+}
+
+/* Progress */
+.progress-wrap{
+  height:4px;background:rgba(255,255,255,.06);
+  padding:0 20px;
+}
+.progress-track{height:100%;border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;border-radius:4px;width:0%;transition:width 1s linear}
+.pf0{background:linear-gradient(90deg,#6366f1,#818cf8)}
+.pf1{background:linear-gradient(90deg,#8b5cf6,#a78bfa)}
+.pf2{background:linear-gradient(90deg,#06b6d4,#67e8f9)}
+.pf3{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.pf4{background:linear-gradient(90deg,#ef4444,#f87171)}
+.pf5{background:linear-gradient(90deg,#10b981,#6ee7b7)}
+.pf6{background:linear-gradient(90deg,#f43f5e,#fb7185)}
+.pf7{background:linear-gradient(90deg,#ec4899,#f9a8d4)}
+
+/* ── Break ── */
+.break-block{
+  margin-top:-1px;
+  background:rgba(250,204,21,.04);
+  border-top:1px solid rgba(250,204,21,.08);
+  padding:12px 20px;
+  display:flex;align-items:center;gap:12px;
+  transition:background .3s;
+}
+.break-icon{font-size:1.3rem}
+.break-content{flex:1}
+.break-label{font-size:.8rem;font-weight:700;color:rgba(250,204,21,.5);margin-bottom:2px}
+.break-times{font-size:1rem;font-weight:800;color:rgba(250,204,21,.85)}
+.break-duration{
+  font-size:.75rem;font-weight:700;color:rgba(250,204,21,.5);
+  background:rgba(250,204,21,.1);padding:3px 10px;border-radius:6px;flex-shrink:0;
+}
+
+/* ── Quote ── */
+.quote{
+  position:relative;z-index:1;margin-top:35px;text-align:center;
+  font-size:1rem;font-style:italic;font-weight:600;
+  color:rgba(255,255,255,.3);
+  animation:fadeDown .8s .6s ease-out both;
+}
+
+/* ── Responsive ── */
+@media(max-width:600px){
+  .title-main{font-size:1.5rem}
+  .digital{font-size:1.5rem}
+  .clock-svg{width:170px;height:170px}
+  .lesson-row{padding:12px 14px}
+  .lesson-time{font-size:1.1rem}
+  .lesson-num{width:38px;height:38px;font-size:1rem}
+}
+</style>
+</head>
+<body>
+
+<!-- Particles -->
+<div class="particles" id="particles"></div>
+
+<!-- Clock -->
+<div class="clock-wrap">
+  <svg class="clock-svg" viewBox="0 0 210 210">
+    <circle class="clock-bg" cx="105" cy="105" r="96"/>
+    <g id="ticks"></g>
+    <g font-size="13" fill="rgba(255,255,255,.5)" font-weight="700" text-anchor="middle" font-family="Nunito">
+      <text x="105" y="25">12</text>
+      <text x="136" y="37">1</text>
+      <text x="164" y="58">2</text>
+      <text x="184" y="105">3</text>
+      <text x="164" y="153">4</text>
+      <text x="136" y="173">5</text>
+      <text x="105" y="188">6</text>
+      <text x="74" y="173">7</text>
+      <text x="46" y="153">8</text>
+      <text x="26" y="105">9</text>
+      <text x="46" y="58">10</text>
+      <text x="74" y="37">11</text>
+    </g>
+    <line class="hand hand-h" id="hourHand"   x1="105" y1="105" x2="105" y2="56"/>
+    <line class="hand hand-m" id="minuteHand" x1="105" y1="105" x2="105" y2="26"/>
+    <line class="hand hand-s" id="secondHand" x1="105" y1="105" x2="105" y2="16"/>
+    <circle class="dot" cx="105" cy="105" r="5"/>
+  </svg>
+  <div class="digital" id="digital">--:--:--</div>
+  <div class="weekday" id="weekday"></div>
+</div>
+
+<!-- Title -->
+<div class="title">
+  <div class="title-main">РОЗКЛАД ДЗВІНКІВ</div>
+  <div class="title-sub">для учнів 5–11 класів</div>
+</div>
+
+<!-- Live Status -->
+<div class="status">
+  <div class="indicator before pulse" id="indicator"></div>
+  <span id="statusText">Завантаження…</span>
+</div>
+
+<!-- Schedule -->
+<div class="schedule" id="schedule"></div>
+
+<!-- Quote -->
+<div class="quote">
+  Навчання — це крок до великих цілей!
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(251,113,133,.5)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+</div>
+
+<script>
+/* ════════════  DATA  ════════════ */
+const LESSONS = [
+  { num: 0,  start: '08:10', end: '08:55' },
+  { num: 1,  start: '09:05', end: '09:50' },
+  { num: 2,  start: '10:05', end: '10:50' },
+  { num: 3,  start: '11:05', end: '11:50' },
+  { num: 4,  start: '12:05', end: '12:50' },
+  { num: 5,  start: '13:00', end: '13:45' },
+  { num: 6,  start: '13:55', end: '14:40' },
+  { num: 7,  start: '14:45', end: '15:30' },
+];
+
+function toMin(t){const[h,m]=t.split(':').map(Number);return h*60+m;}
+
+/* ════════════  PARTICLES  ════════════ */
+(()=>{const c=document.getElementById('particles');for(let i=0;i<30;i++){const s=document.createElement('span');s.className='particle';const sz=Math.random()*10+4;s.style.width=s.style.height=sz+'px';s.style.left=Math.random()*100+'%';s.style.animationDuration=(Math.random()*14+10)+'s';s.style.animationDelay=(Math.random()*14)+'s';c.appendChild(s);}})();
+
+/* ════════════  TICKS  ════════════ */
+(()=>{const g=document.getElementById('ticks');for(let i=0;i<60;i++){const a=i*6*Math.PI/180,mj=i%5===0,r1=mj?82:86,r2=90;const l=document.createElementNS('http://www.w3.org/2000/svg','line');l.setAttribute('x1',105+r1*Math.sin(a));l.setAttribute('y1',105-r1*Math.cos(a));l.setAttribute('x2',105+r2*Math.sin(a));l.setAttribute('y2',105-r2*Math.cos(a));l.className=mj?'tick-maj':'tick';g.appendChild(l);}})();
+
+/* ════════════  BUILD SCHEDULE  ════════════ */
+(()=>{
+  const wrap=document.getElementById('schedule');
+  LESSONS.forEach((l,i)=>{
+    /* Lesson block */
+    const block=document.createElement('div');
+    block.className='block';
+    block.dataset.lesson=i;
+
+    block.innerHTML=`
+      <div class="lesson-row">
+        <div class="lesson-num n${l.num}">${l.num}</div>
+        <div class="lesson-info">
+          <div class="lesson-label">${l.num===0?'Початок дня':'📚 '+l.num+' урок'}</div>
+          <div class="lesson-time">${l.start} – ${l.end}</div>
+        </div>
+        <div class="lesson-duration">${toMin(l.end)-toMin(l.start)} хв</div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-track">
+          <div class="progress-fill pf${l.num}" id="prog-${l.num}"></div>
+        </div>
+      </div>
+    `;
+    wrap.appendChild(block);
+
+    /* Break (not after last) */
+    if(i<LESSONS.length-1){
+      const nxt=LESSONS[i+1];
+      const bf=l.end, bt=nxt.start, bd=toMin(bt)-toMin(bf);
+      const bBlock=document.createElement('div');
+      bBlock.className='break-block';
+      bBlock.dataset.break=i;
+      bBlock.innerHTML=`
+        <span class="break-icon">☕</span>
+        <div class="break-content">
+          <div class="break-label">Перерва</div>
+          <div class="break-times">${bf} – ${bt}</div>
+        </div>
+        <span class="break-duration">${bd} хв</span>
+      `;
+      wrap.appendChild(bBlock);
+    }
+  });
+})();
+
+/* ════════════  MAIN LOOP  ════════════ */
+const DAY_NAMES=['Неділя','Понеділок','Вівторок','Середа','Четвер','П\'ятниця','Субота'];
+const MONTH_NAMES=['січня','лютого','березня','квітня','травня','червня','липня','серпня','вересня','жовтня','листопада','грудня'];
+
+function tick(){
+  const now=new Date();
+  const h=now.getHours(),m=now.getMinutes(),s=now.getSeconds(),ms=now.getMilliseconds();
+
+  // digital + weekday
+  document.getElementById('digital').textContent=
+    String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  document.getElementById('weekday').textContent=
+    DAY_NAMES[now.getDay()]+', '+now.getDate()+' '+MONTH_NAMES[now.getMonth()]+' '+now.getFullYear();
+
+  // clock hands (coord-based)
+  const d2r=d=>d*Math.PI/180;
+  const sa=(s+ms/1000)*6, ma=(m+s/60)*6, ha=((h%12)+m/60)*30;
+  function setH(id,angle,r){const el=document.getElementById(id);el.setAttribute('x2',105+r*Math.sin(d2r(angle)));el.setAttribute('y2',105-r*Math.cos(d2r(angle)));}
+  setH('hourHand',ha,46);
+  setH('minuteHand',ma,73);
+  setH('secondHand',sa,84);
+
+  // find state
+  const cur=h*60+m+s/60;
+  let activeLesson=-1, activeBreak=-1, state='before';
+  for(let i=0;i<LESSONS.length;i++){
+    if(cur>=toMin(LESSONS[i].start)&&cur<toMin(LESSONS[i].end)){activeLesson=i;state='lesson';break;}
+    if(i<LESSONS.length-1){const bs=toMin(LESSONS[i].end),be=toMin(LESSONS[i+1].start);if(cur>=bs&&cur<be){activeBreak=i;state='break';break;}}
+  }
+  if(state==='before'&&cur<toMin(LESSONS[0].start)) state='before';
+  if(state==='before'&&cur>=toMin(LESSONS[LESSONS.length-1].end)) state='after';
+
+  // indicator + status
+  const ind=document.getElementById('indicator');
+  const txt=document.getElementById('statusText');
+  ind.className='indicator pulse';
+
+  if(state==='lesson'){
+    ind.classList.add('lesson');
+    const l=LESSONS[activeLesson];
+    txt.textContent=`📖 Зараз: ${l.num===0?'Початок':l.num+' урок'}  •  ${l.start} – ${l.end}`;
+  }else if(state==='break'){
+    ind.classList.add('break');
+    const l=LESSONS[activeBreak];
+    const nxt=LESSONS[activeBreak+1];
+    txt.textContent=`☕ Перерва  •  ${l.end} – ${nxt.start}  (${toMin(nxt.start)-toMin(l.end)} хв)`;
+  }else if(state==='before'){
+    ind.classList.add('before');
+    txt.textContent='☀️ Школа ще не почалась  •  початок о 08:10';
+  }else{
+    ind.classList.add('after');
+    txt.textContent='🏠 Школу закінчено!  •  відпочивай!';
+  }
+
+  // update blocks
+  const blocks=document.querySelectorAll('.block');
+  const breakBlocks=document.querySelectorAll('.break-block');
+
+  blocks.forEach((blk,i)=>{
+    blk.classList.remove('active','done','break-active');
+    const prog=document.getElementById('prog-'+LESSONS[i].num);
+
+    if(state==='lesson'&&i===activeLesson){
+      blk.classList.add('active');
+      const l=LESSONS[i];const dur=toMin(l.end)-toMin(l.start);const elapsed=cur-toMin(l.start);
+      prog.style.width=Math.min((elapsed/dur)*100,100)+'%';
+    }else if(state==='after'||(state==='lesson'&&i<activeLesson)){
+      blk.classList.add('done');prog.style.width='100%';
+    }else if(state==='break'&&i===activeBreak){
+      blk.classList.add('done');prog.style.width='100%';
+    }else{
+      prog.style.width='0%';
+    }
+  });
+
+  breakBlocks.forEach((bb,i)=>{
+    bb.classList.remove('break-active');
+    if(state==='break'&&i===activeBreak) bb.classList.add('break-active');
+  });
+}
+
+tick();
+setInterval(tick,200);
+</script>
+</body>
+</html>

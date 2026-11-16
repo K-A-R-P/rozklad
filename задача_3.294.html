@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Задача 3.294 — Математика 5 класс</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+        }
+
+        .task-card {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            max-width: 750px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .task-header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 25px 35px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .task-number {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 10px 18px;
+            font-size: 28px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 1px;
+        }
+
+        .task-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .task-body {
+            padding: 35px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 15px;
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        .section-label.condition {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .section-label.solution {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .section-label.answer {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .condition-text {
+            font-size: 17px;
+            line-height: 1.8;
+            color: #424242;
+            background: #fafafa;
+            border-left: 4px solid #ff9800;
+            padding: 18px 22px;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .given-block {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-radius: 12px;
+            padding: 20px 25px;
+            margin-bottom: 20px;
+        }
+
+        .given-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2e7d32;
+            margin-bottom: 12px;
+        }
+
+        .given-item {
+            font-size: 16px;
+            color: #333;
+            padding: 4px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .given-item::before {
+            content: '•';
+            position: absolute;
+            left: 4px;
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        .given-item strong {
+            color: #d84315;
+        }
+
+        .solution-steps {
+            list-style: none;
+        }
+
+        .solution-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 18px;
+            padding: 15px 20px;
+            background: #f9fbe7;
+            border-radius: 12px;
+            transition: transform 0.2s;
+        }
+
+        .solution-step:hover {
+            transform: translateX(5px);
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #43a047, #66bb6a);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            font-size: 17px;
+            line-height: 1.7;
+            color: #333;
+        }
+
+        .step-content .calc {
+            font-family: 'Courier New', Courier, monospace;
+            background: #e8eaf6;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #1a237e;
+        }
+
+        .final-answer {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-radius: 14px;
+            padding: 22px 28px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .answer-icon {
+            font-size: 40px;
+        }
+
+        .answer-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0d47a1;
+        }
+
+        .answer-text span {
+            font-size: 26px;
+            color: #1565c0;
+        }
+
+        .formula-block {
+            display: inline-block;
+            background: linear-gradient(135deg, #ede7f6, #d1c4e9);
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #4a148c;
+            margin: 3px 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            background: #f5f5f5;
+            font-size: 13px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="task-card">
+
+        <!-- Шапка -->
+        <div class="task-header">
+            <div class="task-number">№ 3.294</div>
+            <div class="task-title">Моторная лодка на реке и озере</div>
+        </div>
+
+        <div class="task-body">
+
+            <!-- Условие -->
+            <div class="section">
+                <div class="section-label condition">📋 Условие</div>
+                <div class="condition-text">
+                    Моторная лодка плыла <strong>2 ч</strong> по реке и <strong>5 ч</strong> по озеру.
+                    Найдите, сколько всего километров прошла моторная лодка, если по озеру
+                    она двигалась со скоростью <strong>21 км/ч</strong>, а по реке —
+                    <strong>на 4 км/ч быстрее</strong>.
+                </div>
+            </div>
+
+            <!-- Дано -->
+            <div class="section">
+                <div class="given-block">
+                    <div class="given-title">📌 Дано:</div>
+                    <div class="given-item">Время движения по озеру: <strong>t₁ = 5 ч</strong></div>
+                    <div class="given-item">Скорость по озеру: <strong>v₁ = 21 км/ч</strong></div>
+                    <div class="given-item">Время движения по реке: <strong>t₂ = 2 ч</strong></div>
+                    <div class="given-item">Скорость по реке: <strong>v₂ = v₁ + 4 = 21 + 4 км/ч</strong></div>
+                    <div class="given-item"><strong>S<sub>общ</sub> — ?</strong></div>
+                </div>
+            </div>
+
+            <!-- Решение -->
+            <div class="section">
+                <div class="section-label solution">✏️ Решение</div>
+                <ol class="solution-steps">
+                    <li class="solution-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            Найдём скорость лодки по реке:<br>
+                            <span class="calc">v₂ = 21 + 4 = 25 (км/ч)</span>
+                        </div>
+                    </li>
+                    <li class="solution-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            Найдём расстояние, пройденное по озеру:<br>
+                            <span class="calc">S₁ = 21 · 5 = 105 (км)</span>
+                        </div>
+                    </li>
+                    <li class="solution-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            Найдём расстояние, пройденное по реке:<br>
+                            <span class="calc">S₂ = 25 · 2 = 50 (км)</span>
+                        </div>
+                    </li>
+                    <li class="solution-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            Найдём общее расстояние:<br>
+                            <span class="calc">S<sub>общ</sub> = 105 + 50 = 155 (км)</span>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+
+            <!-- Ответ -->
+            <div class="section">
+                <div class="final-answer">
+                    <div class="answer-icon">✅</div>
+                    <div class="answer-text">
+                        Ответ: <span>155 км</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            Математика · 5 класс · Умножение и деление натуральных чисел
+        </div>
+
+    </div>
+</body>
+</html>

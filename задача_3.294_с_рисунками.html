@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Задача 3.294 — Математика 5 класс</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px;
+        }
+
+        .task-card {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            max-width: 850px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .task-header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 25px 35px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .task-number {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 10px 18px;
+            font-size: 28px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 1px;
+        }
+
+        .task-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .task-body { padding: 35px; }
+
+        .section { margin-bottom: 30px; }
+
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 15px;
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        .section-label.condition { background: #fff3e0; color: #e65100; }
+        .section-label.solution { background: #e8f5e9; color: #2e7d32; }
+        .section-label.answer { background: #e3f2fd; color: #1565c0; }
+        .section-label.visual { background: #f3e5f5; color: #7b1fa2; }
+
+        .condition-text {
+            font-size: 17px;
+            line-height: 1.8;
+            color: #424242;
+            background: #fafafa;
+            border-left: 4px solid #ff9800;
+            padding: 18px 22px;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .given-block {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-radius: 12px;
+            padding: 20px 25px;
+            margin-bottom: 20px;
+        }
+
+        .given-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2e7d32;
+            margin-bottom: 12px;
+        }
+
+        .given-item {
+            font-size: 16px;
+            color: #333;
+            padding: 4px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .given-item::before {
+            content: '•';
+            position: absolute;
+            left: 4px;
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        .given-item strong { color: #d84315; }
+
+        .solution-steps { list-style: none; }
+
+        .solution-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 18px;
+            padding: 15px 20px;
+            background: #f9fbe7;
+            border-radius: 12px;
+            transition: transform 0.2s;
+        }
+
+        .solution-step:hover { transform: translateX(5px); }
+
+        .step-number {
+            background: linear-gradient(135deg, #43a047, #66bb6a);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            font-size: 17px;
+            line-height: 1.7;
+            color: #333;
+        }
+
+        .step-content .calc {
+            font-family: 'Courier New', Courier, monospace;
+            background: #e8eaf6;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #1a237e;
+        }
+
+        .final-answer {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-radius: 14px;
+            padding: 22px 28px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .answer-icon { font-size: 40px; }
+
+        .answer-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0d47a1;
+        }
+
+        .answer-text span { font-size: 26px; color: #1565c0; }
+
+        /* === ВИЗУАЛЬНЫЕ БЛОКИ === */
+        .visual-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .diagram-box {
+            background: #f8f9ff;
+            border: 2px solid #e0e0e0;
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .diagram-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #5c6bc0;
+            margin-bottom: 15px;
+        }
+
+        .hint-text {
+            font-size: 15px;
+            color: #777;
+            font-style: italic;
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            background: #f5f5f5;
+            font-size: 13px;
+            color: #999;
+        }
+
+        /* Объясняющий блок */
+        .explain-box {
+            background: linear-gradient(135deg, #fff8e1, #ffecb3);
+            border: 2px solid #ffc107;
+            border-radius: 14px;
+            padding: 22px 28px;
+            margin-bottom: 25px;
+            font-size: 16px;
+            line-height: 1.7;
+            color: #555;
+        }
+
+        .explain-box strong { color: #e65100; }
+
+        .arrow-right {
+            display: inline-block;
+            margin: 0 8px;
+            color: #ffc107;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="task-card">
+
+        <!-- Шапка -->
+        <div class="task-header">
+            <div class="task-number">№ 3.294</div>
+            <div class="task-title">Моторная лодка на реке и озере</div>
+        </div>
+
+        <div class="task-body">
+
+            <!-- Условие -->
+            <div class="section">
+                <div class="section-label condition">📋 Условие</div>
+                <div class="condition-text">
+                    Моторная лодка плыла <strong>2 ч</strong> по реке и <strong>5 ч</strong> по озеру.
+                    Найдите, сколько всего километров прошла моторная лодка, если по озеру
+                    она двигалась со скоростью <strong>21 км/ч</strong>, а по реке —
+                    <strong>на 4 км/ч быстрее</strong>.
+                </div>
+            </div>
+
+            <!-- Дано -->
+            <div class="section">
+                <div class="given-block">
+                    <div class="given-title">📌 Дано:</div>
+                    <div class="given-item">Время движения по озеру: <strong>t₁ = 5 ч</strong></div>
+                    <div class="given-item">Скорость по озеру: <strong>v₁ = 21 км/ч</strong></div>
+                    <div class="given-item">Время движения по реке: <strong>t₂ = 2 ч</strong></div>
+                    <div class="given-item">Скорость по реке: <strong>v₂ = v₁ + 4 = 21 + 4 км/ч</strong></div>
+                    <div class="given-item"><strong>S<sub>общ</sub> — ?</strong></div>
+                </div>
+            </div>
+
+            <!-- Объяснение для ребёнка -->
+            <div class="explain-box">
+                💡 <strong>Объяснение:</strong> Лодка плыла в двух местах — по озеру и по реке.
+                По озеру она плыла <strong>медленнее</strong> (21 км/ч), а по реке —
+                <strong>быстрее</strong> (25 км/ч), потому что течение помогает.
+                Нужно найти, какое общее расстояние прошла лодка.
+            </div>
+
+            <!-- Визуальные диаграммы -->
+            <div class="section">
+                <div class="section-label visual">🎨 Наглядный рисунок</div>
+                <div class="visual-container">
+
+                    <!-- Рисунок 1: Отрезковая диаграмма — общий путь -->
+                    <div class="diagram-box">
+                        <div class="diagram-title">📏 Общий путь лодки (отрезковая диаграмма)</div>
+                        <svg width="750" height="180" viewBox="0 0 750 180" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Общий отрезок -->
+                            <line x1="50" y1="80" x2="700" y2="80" stroke="#333" stroke-width="3"/>
+                            <!-- Концевые засечки -->
+                            <line x1="50" y1="65" x2="50" y2="95" stroke="#333" stroke-width="3"/>
+                            <line x1="700" y1="65" x2="700" y2="95" stroke="#333" stroke-width="3"/>
+
+                            <!-- Разделение на два участка -->
+                            <line x1="400" y1="60" x2="400" y2="100" stroke="#5c6bc0" stroke-width="2" stroke-dasharray="5,3"/>
+
+                            <!-- Участок 1: озеро (3/5 от общего времени, но с другой скоростью) -->
+                            <rect x="52" y="83" width="346" height="14" rx="4" fill="#4fc3f7" opacity="0.8"/>
+                            <text x="225" y="94" text-anchor="middle" font-size="14" fill="#333" font-weight="bold">По озеру</text>
+
+                            <!-- Участок 2: река -->
+                            <rect x="402" y="83" width="296" height="14" rx="4" fill="#ffb74d" opacity="0.8"/>
+                            <text x="550" y="94" text-anchor="middle" font-size="14" fill="#333" font-weight="bold">По реке</text>
+
+                            <!-- Подписи сверху -->
+                            <text x="225" y="55" text-anchor="middle" font-size="13" fill="#1565c0" font-weight="600">S₁ = 21 · 5 = 105 км</text>
+                            <text x="550" y="55" text-anchor="middle" font-size="13" fill="#e65100" font-weight="600">S₂ = 25 · 2 = 50 км</text>
+
+                            <!-- Общая подпись -->
+                            <text x="375" y="140" text-anchor="middle" font-size="18" fill="#1a237e" font-weight="bold">S<sub>общ</sub> = 105 + 50 = 155 км</text>
+                            <text x="375" y="160" text-anchor="middle" font-size="13" fill="#999">Общий путь = путь по озеру + путь по реке</text>
+                        </svg>
+                        <div class="hint-text">
+                            💡 Видишь? Путь разделили на два отрезка: <span style="color:#1565c0; font-weight:bold;">синий</span> — по озеру,
+                            <span style="color:#e65100; font-weight:bold;">оранжевый</span> — по реке.
+                            А общая длина — сумма обоих!
+                        </div>
+                    </div>
+
+                    <!-- Рисунок 2: Скорости на шкале -->
+                    <div class="diagram-box">
+                        <div class="diagram-title">🚀 Скорости на линейке</div>
+                        <svg width="750" height="160" viewBox="0 0 750 160" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Шкала -->
+                            <line x1="80" y1="100" x2="700" y2="100" stroke="#333" stroke-width="2"/>
+
+                            <!-- Деления -->
+                            <line x1="80" y1="88" x2="80" y2="112" stroke="#333" stroke-width="2"/>
+                            <text x="80" y="130" text-anchor="middle" font-size="12" fill="#999">0</text>
+
+                            <line x1="200" y1="90" x2="200" y2="110" stroke="#ccc" stroke-width="1"/>
+                            <text x="200" y="130" text-anchor="middle" font-size="12" fill="#999">50</text>
+
+                            <line x1="320" y1="90" x2="320" y2="110" stroke="#ccc" stroke-width="1"/>
+                            <text x="320" y="130" text-anchor="middle" font-size="12" fill="#999">100</text>
+
+                            <line x1="440" y1="90" x2="440" y2="110" stroke="#ccc" stroke-width="1"/>
+                            <text x="440" y="130" text-anchor="middle" font-size="12" fill="#999">150</text>
+
+                            <!-- Отметка 21 км/ч (озеро) -->
+                            <line x1="163" y1="40" x2="163" y2="100" stroke="#42a5f5" stroke-width="3"/>
+                            <circle cx="163" cy="100" r="8" fill="#42a5f5"/>
+                            <text x="163" y="30" text-anchor="middle" font-size="15" fill="#1565c0" font-weight="bold">21 км/ч</text>
+                            <text x="163" y="20" text-anchor="middle" font-size="11" fill="#1565c0">🚣 Озеро</text>
+
+                            <!-- Отметка 25 км/ч (река) -->
+                            <line x1="193" y1="40" x2="193" y2="100" stroke="#ffa726" stroke-width="3"/>
+                            <circle cx="193" cy="100" r="8" fill="#ffa726"/>
+                            <text x="193" y="30" text-anchor="middle" font-size="15" fill="#e65100" font-weight="bold">25 км/ч</text>
+                            <text x="193" y="20" text-anchor="middle" font-size="11" fill="#e65100">🚤 Река (+4 км/ч)</text>
+
+                            <!-- Стрелка разницы -->
+                            <line x1="171" y1="48" x2="185" y2="48" stroke="#9c27b0" stroke-width="2" marker-end="url(#arrowhead)"/>
+                            <defs>
+                                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="#9c27b0"/>
+                                </marker>
+                            </defs>
+                            <text x="182" y="42" text-anchor="middle" font-size="11" fill="#9c27b0" font-weight="bold">+4 км/ч</text>
+                        </svg>
+                        <div class="hint-text">
+                            💡 По реке быстрее — течение помогает! Скорость увеличивается на <strong>4 км/ч</strong>:
+                            21 + 4 = 25 км/ч.
+                        </div>
+                    </div>
+
+                    <!-- Рисунок 3: Таблица-схема -->
+                    <div class="diagram-box">
+                        <div class="diagram-title">📊 Таблица-схема пути</div>
+                        <svg width="600" height="230" viewBox="0 0 600 230" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Таблица -->
+                            <!-- Заголовок -->
+                            <rect x="50" y="10" width="500" height="35" rx="6" fill="#5c6bc0"/>
+                            <text x="166" y="33" text-anchor="middle" font-size="14" fill="white" font-weight="bold">Что было</text>
+                            <text x="333" y="33" text-anchor="middle" font-size="14" fill="white" font-weight="bold">Скорость</text>
+                            <text x="500" y="33" text-anchor="middle" font-size="14" fill="white" font-weight="bold">Время</text>
+
+                            <!-- Озеро -->
+                            <rect x="50" y="50" width="165" height="45" rx="4" fill="#e3f2fd"/>
+                            <text x="132" y="78" text-anchor="middle" font-size="15" fill="#1565c0" font-weight="bold">По озеру 🚣</text>
+
+                            <rect x="215" y="50" width="165" height="45" rx="4" fill="#bbdefb"/>
+                            <text x="297" y="78" text-anchor="middle" font-size="15" fill="#1565c0" font-weight="bold">21 км/ч</text>
+
+                            <rect x="380" y="50" width="170" height="45" rx="4" fill="#bbdefb"/>
+                            <text x="465" y="78" text-anchor="middle" font-size="15" fill="#1565c0" font-weight="bold">5 ч</text>
+
+                            <!-- Река -->
+                            <rect x="50" y="105" width="165" height="45" rx="4" fill="#fff3e0"/>
+                            <text x="132" y="133" text-anchor="middle" font-size="15" fill="#e65100" font-weight="bold">По реке 🚤</text>
+
+                            <rect x="215" y="105" width="165" height="45" rx="4" fill="#ffe0b2"/>
+                            <text x="297" y="133" text-anchor="middle" font-size="15" fill="#e65100" font-weight="bold">25 км/ч</text>
+
+                            <rect x="380" y="105" width="170" height="45" rx="4" fill="#ffe0b2"/>
+                            <text x="465" y="133" text-anchor="middle" font-size="15" fill="#e65100" font-weight="bold">2 ч</text>
+
+                            <!-- Результат -->
+                            <rect x="50" y="165" width="500" height="50" rx="8" fill="#c8e6c9" stroke="#4caf50" stroke-width="2"/>
+                            <text x="200" y="188" text-anchor="middle" font-size="14" fill="#2e7d32" font-weight="bold">S₁ = 21 × 5 = 105 км</text>
+                            <text x="350" y="188" text-anchor="middle" font-size="14" fill="#2e7d32" font-weight="bold">S₂ = 25 × 2 = 50 км</text>
+                            <text x="300" y="208" text-anchor="middle" font-size="16" fill="#1b5e20" font-weight="bold">S<sub>общ</sub> = 105 + 50 = <tspan fill="#d32f2f">155 км</tspan></text>
+                        </svg>
+                    </div>
+
+                    <!-- Рисунок 4: Символьная запись -->
+                    <div class="diagram-box">
+                        <div class="diagram-title">🗺️ Как лодка плыла (схема маршрута)</div>
+                        <svg width="750" height="170" viewBox="0 0 750 170" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Путь по озеру -->
+                            <ellipse cx="200" cy="85" rx="140" ry="55" fill="#bbdefb" opacity="0.5" stroke="#42a5f5" stroke-width="2"/>
+                            <text x="200" y="80" text-anchor="middle" font-size="13" fill="#1565c0" font-weight="bold">ОЗЕРО</text>
+                            <text x="200" y="98" text-anchor="middle" font-size="12" fill="#1565c0">5 часов</text>
+
+                            <!-- Лодка по озеру -->
+                            <text x="155" y="78" font-size="20">🚣</text>
+
+                            <!-- Стрелка -->
+                            <line x1="340" y1="85" x2="390" y2="85" stroke="#333" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                            <defs>
+                                <marker id="arrowhead2" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+                                </marker>
+                            </defs>
+
+                            <!-- Путь по реке -->
+                            <rect x="400" y="30" width="290" height="110" rx="10" fill="#ffe0b2" opacity="0.5" stroke="#ffa726" stroke-width="2"/>
+                            <text x="545" y="75" text-anchor="middle" font-size="13" fill="#e65100" font-weight="bold">РЕКА 🏞️</text>
+                            <text x="545" y="93" text-anchor="middle" font-size="12" fill="#e65100">2 часа</text>
+
+                            <!-- Лодка по реке -->
+                            <text x="480" y="85" font-size="20">🚤</text>
+
+                            <!-- Течение -->
+                            <text x="545" y="120" text-anchor="middle" font-size="11" fill="#999">→ течение →</text>
+
+                            <!-- Подписи скоростей -->
+                            <text x="200" y="155" text-anchor="middle" font-size="12" fill="#777">21 км/ч (тихо)</text>
+                            <text x="545" y="155" text-anchor="middle" font-size="12" fill="#777">25 км/ч (течение помогает!)</text>
+                        </svg>
+                        <div class="hint-text">
+                            💡 Сначала лодка плыла по озеру — <strong>тихо, спокойно</strong>, 5 часов.
+                            Потом вошла в реку — <strong>течение помогло</strong> и стало быстрее!
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Решение -->
+            <div class="section">
+                <div class="section-label solution">✏️ Решение</div>
+                <ol class="solution-steps">
+                    <li class="solution-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            Найдём скорость лодки по реке:<br>
+                            <span class="calc">v₂ = 21 + 4 = 25 (км/ч)</span>
+                        </div>
+                    </li>
+                    <li class="solution-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            Найдём расстояние, пройденное по озеру:<br>
+                            <span class="calc">S₁ = 21 · 5 = 105 (км)</span>
+                        </div>
+                    </li>
+                    <li class="solution-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            Найдём расстояние, пройденное по реке:<br>
+                            <span class="calc">S₂ = 25 · 2 = 50 (км)</span>
+                        </div>
+                    </li>
+                    <li class="solution-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            Найдём общее расстояние:<br>
+                            <span class="calc">S<sub>общ</sub> = 105 + 50 = 155 (км)</span>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+
+            <!-- Ответ -->
+            <div class="section">
+                <div class="final-answer">
+                    <div class="answer-icon">✅</div>
+                    <div class="answer-text">
+                        Ответ: <span>155 км</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            Математика · 5 класс · Умножение и деление натуральных чисел
+        </div>
+
+    </div>
+</body>
+</html>
