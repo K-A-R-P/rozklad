@@ -90,6 +90,7 @@ body{
   position:relative;z-index:1;
   width:100%;max-width:650px;
   animation:fadeDown .8s .45s ease-out both;
+  display:flex;flex-direction:column;gap:12px;
 }
 
 /* Each block = lesson + break */
@@ -98,7 +99,7 @@ body{
   border:1px solid rgba(255,255,255,.06);
   border-radius:18px;
   overflow:hidden;
-  transition:transform .3s,box-shadow .3s,border-color .4s;
+  transition:transform .3s,box-shadow .3s,border-color .4s,opacity .5s,filter .5s;
 }
 .block:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(100,200,255,.1);border-color:rgba(100,200,255,.2)}
 .block.active{
@@ -107,7 +108,7 @@ body{
   animation:glow 2s ease-in-out infinite;
 }
 @keyframes glow{0%,100%{box-shadow:0 0 25px rgba(103,232,249,.12)}50%{box-shadow:0 0 40px rgba(103,232,249,.22)}}
-.block.done{opacity:.35;filter:grayscale(.3)}
+.block.faded{opacity:.32;filter:grayscale(.35)}
 
 @keyframes glowBreak{0%,100%{box-shadow:0 0 20px rgba(250,204,21,.1)}50%{box-shadow:0 0 35px rgba(250,204,21,.2)}}
 
@@ -165,18 +166,18 @@ body{
 
 /* ── Break ── */
 .break-block{
-  margin: 10px 0; /* Додає відступи зверху та знизу, щоб виділити блок */
+  margin: 0;
   background: rgba(250, 204, 21, 0.06);
-  border: 1px solid rgba(250, 204, 21, 0.15); /* Робимо повну рамку на всі боки */
-  border-radius: 14px; /* Додаємо заокруглення кутів */
+  border: 1px solid rgba(250, 204, 21, 0.15);
+  border-radius: 14px;
   padding: 12px 20px;
   display: flex;
   align-items: center;
   gap: 12px;
-  transition: background .3s, border-color .3s, box-shadow .3s;
+  transition: background .3s, border-color .3s, box-shadow .3s, opacity .5s, filter .5s;
 }
+.break-block.faded{opacity:.32;filter:grayscale(.3)}
 
-/* Виправлений селектор для активної перерви */
 .break-block.break-active {
   border-color: rgba(250, 204, 21, 0.4);
   box-shadow: 0 0 25px rgba(250, 204, 21, 0.15);
@@ -363,6 +364,7 @@ function tick(){
   }
   if(state==='before'&&cur<toMin(LESSONS[0].start)) state='before';
   if(state==='before'&&cur>=toMin(LESSONS[LESSONS.length-1].end)) state='after';
+  const schoolOver = state==='after';
 
   // indicator + status
   const ind=document.getElementById('indicator');
@@ -391,25 +393,34 @@ function tick(){
   const breakBlocks=document.querySelectorAll('.break-block');
 
   blocks.forEach((blk,i)=>{
-    blk.classList.remove('active','done','break-active');
-    const prog=document.getElementById('prog-'+LESSONS[i].num);
+    const l=LESSONS[i];
+    const startM=toMin(l.start), endM=toMin(l.end);
+    const isPast=!schoolOver && cur>=endM;
 
-    if(state==='lesson'&&i===activeLesson){
+    blk.classList.remove('active','done','faded');
+    blk.style.order = schoolOver ? 2*i : (isPast ? 2000+2*i : 2*i);
+    if(isPast) blk.classList.add('faded');
+
+    const prog=document.getElementById('prog-'+l.num);
+
+    if(schoolOver || isPast){
+      prog.style.width='100%';
+    }else if(state==='lesson'&&i===activeLesson){
       blk.classList.add('active');
-      const l=LESSONS[i];const dur=toMin(l.end)-toMin(l.start);const elapsed=cur-toMin(l.start);
+      const dur=endM-startM;
+      const elapsed=cur-startM;
       prog.style.width=Math.min((elapsed/dur)*100,100)+'%';
-    }else if(state==='after'||(state==='lesson'&&i<activeLesson)){
-      blk.classList.add('done');prog.style.width='100%';
-    }else if(state==='break'&&i===activeBreak){
-      blk.classList.add('done');prog.style.width='100%';
     }else{
       prog.style.width='0%';
     }
   });
 
-  breakBlocks.forEach((bb,i)=>{
+  breakBlocks.forEach((bb,j)=>{
+    const isPast=!schoolOver && cur>=toMin(LESSONS[j+1].start);
+    bb.classList.toggle('faded',isPast);
+    bb.style.order = schoolOver ? (2*j+1) : (isPast ? 2000+2*j+1 : 2*j+1);
     bb.classList.remove('break-active');
-    if(state==='break'&&i===activeBreak) bb.classList.add('break-active');
+    if(state==='break'&&j===activeBreak) bb.classList.add('break-active');
   });
 }
 
