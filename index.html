@@ -379,7 +379,10 @@ function tick(){
     ind.classList.add('break');
     const l=LESSONS[activeBreak];
     const nxt=LESSONS[activeBreak+1];
-    txt.textContent=`☕ Перерва  •  ${l.end} – ${nxt.start}  (${toMin(nxt.start)-toMin(l.end)} хв)`;
+    const breakEndSec = Math.max(0, toMin(nxt.start)*60 - (h*3600 + m*60 + s));
+    const remainMin = Math.floor(breakEndSec/60);
+    const remainSecLeft = breakEndSec%60;
+    txt.textContent=`☕ Перерва  •  ${l.end} – ${nxt.start}  (залишилось: ${remainMin} хв ${remainSecLeft} сек)`;
   }else if(state==='before'){
     ind.classList.add('before');
     txt.textContent='☀️ Школа ще не почалась  •  початок о 08:10';
